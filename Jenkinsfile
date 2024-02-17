@@ -1,27 +1,22 @@
 podTemplate(
+    cloud: 'kubernetes', // Specify your Kubernetes cloud configuration if you have multiple
     containers: [
         containerTemplate(
             name: 'maven',
-            image: 'maven:3.8.1-jdk-8', // Adjust the image version as necessary
+            image: 'maven:3.8.1-jdk-8',
             command: 'cat',
-            ttyEnabled: true,
-            volumeMounts: [
-                volumeMount(
-                    mountPath: '/root/.m2/repository',
-                    name: 'maven-repo'
-                )
-            ]
+            ttyEnabled: true
         )
     ],
     volumes: [
         persistentVolumeClaim(
-            claimName: 'maven-pvc', // Ensure this matches the name of your PVC
+            claimName: 'maven-pvc',
             mountPath: '/root/.m2/repository',
             readOnly: false
         )
     ]
 ) {
-    node {
+    node(POD_LABEL) {
         stage('Checkout') {
             checkout scm
         }
