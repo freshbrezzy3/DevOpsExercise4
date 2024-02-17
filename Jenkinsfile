@@ -1,27 +1,26 @@
 podTemplate(containers: [
   containerTemplate(
-      name: 'maven', 
-      image: 'maven:latest', 
-      command: 'sleep', 
+      name: 'maven',
+      image: 'maven:latest',
+      command: 'sleep',
       args: '99d'
       )
-  ], 
-  
+  ],
   volumes: [
   persistentVolumeClaim(
-      mountPath: '/root/.m2/repository', 
-      claimName: 'maven-repo-storage', 
+      mountPath: '/root/.m2/repository',
+      claimName: 'custom-java-build-storage',
       readOnly: false
       )
   ]) 
-
 {
   node(POD_LABEL) {
-    stage('Build Petclinic Java App') {
-      git url: 'https://github.com/spring-projects/spring-petclinic.git', branch: 'main'
+    stage('Build Java App') {
+      git url: 'https://github.com/junit-team/junit5.git', branch: 'main'
       container('maven') {
-        sh 'mvn -B -ntp clean package -DskipTests'
+        sh 'mvn -B -ntp clean test'
       }
     }
   }
 }
+
